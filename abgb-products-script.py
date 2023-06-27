@@ -34,8 +34,6 @@ def add_to_db_table(db, links): # going page by page
         db.execute("INSERT INTO primeabgb_products (title, link) VALUES (?, ?)", (title, link))
     db.commit()
 
-
-
 db = sqlite3.connect("database.db")
 db.execute("DROP TABLE IF EXISTS primeabgb_products;")
 db.execute("CREATE TABLE IF NOT EXISTS primeabgb_products (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT(100), link VARCHAR);")
