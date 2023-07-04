@@ -1,4 +1,5 @@
-# Test file to save page HTML (for finding data sources, etc. and to test properties, etc. for MDComputers 
+# Test file to save single page HTML (for finding data sources, etc. and to test properties, etc. for MDComputers
+# Obsolete as mdcrawler.py uses product search pages to extract info
 
 import requests
 from bs4 import BeautifulSoup
@@ -28,3 +29,4 @@ for URL in URLs:
     stock_div = soup.select_one(oos_tag).text
     stock_status = stock_div.split(sep=":")[1].strip()
     print(stock_status)
+ 
