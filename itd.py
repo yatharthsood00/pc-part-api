@@ -1,12 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
-import os
+# import os
 import urllib3
 from database_utils import *
 
 urllib3.disable_warnings()
 
-# categories! to get through all products. Can add categories here to get more products,
+# categories! to get through all products for itdepot. Can add categories here to get more products,
 # for now only the most obvious candidates stay here
 category_dict = {
     "Cabinets": 5,

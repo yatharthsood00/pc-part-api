@@ -1,5 +1,4 @@
 # TODO: drop and remake table md_products
-# TODO: merge no_of_pages and price_extract to reduce page requests
 
 import requests
 import sqlite3
@@ -58,7 +57,6 @@ def md_all_category_links(homepage_URL):
     clearfix = soup.find_all('a', class_="clearfix")
     return [a['href'] for a in clearfix]
 
-# TODO: It might be possible to skip this step or integrate this with categories to execute these better
 def no_of_pages(pagelinks): # number of pages for each category link
     # final dict = {"category": ["link", pages]}
     categories = [link.split(sep="/")[-1] for link in pagelinks]
