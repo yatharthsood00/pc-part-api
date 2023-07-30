@@ -34,7 +34,6 @@ class DatabaseUtils:
 
     def append_data_to_table(self, data):
         # Append data to the table as a tuple: LNPIDC
-        print(data)
         self.cursor.execute(f'''INSERT INTO {self.table_name} (
                                 link,
                                 name,
