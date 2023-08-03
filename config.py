@@ -1,12 +1,12 @@
 # Meta stuff, for reference
-sitenames = [["primeabgb", "pgb"], ["mdcomputers", "mdc"], ["theitdepot", "itd"]]
+sitenames = {'primeabgb': 'PGB', 'mdcomputers': 'MDC', 'theitdepot': 'ITD'}
 website_tables = {
                   "theitdepot": "itd_products",
                   "mdcomputers": "md_products",
                   "primeabgb": "prime_products"
                 }
 
-                # categories! to get through all products for itdepot. Can add categories here to get more products,
+# categories! to get through all products for itdepot. Can add categories here to get more products,
 # for now only the most obvious candidates stay here
 itd_category_dict = {
     "Cabinets": 5,
@@ -23,17 +23,21 @@ itd_category_dict = {
 }
 
 # Main Variables
-site_list_pages = {
-    "primeabgb": "https://www.primeabgb.com",
-    "theitdepot": "https://www.theitdepot.com/category_filter.php",
-    "mdcomputers": "",
+site_pages = {
+    "PGB": "https://www.primeabgb.com/buy-online-price-india/",
+    "ITD": "https://www.theitdepot.com/category_filter.php/",
+    "MDC": "",
 }
 
+# for ITD and any other websites that don't use straight links
 site_params = {
-    "theitdepot": {
+    "ITD": {
         'filter-limit': '99999',
-        'category': str(itd_category_dict[""]), #]),
+        # 'category': str(itd_category_dict[""]), #]),
         'filter': 'true',
+    },
+    "PGB": {
+        'per_page': '9999',
     }
 }
 
