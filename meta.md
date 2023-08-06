@@ -7,3 +7,7 @@ Stock/not in stock:
 MD: If the product is not seen in the products list as a whole, it is OOS
 (basically, query with today's date as WHERE clause gets you all in-stock products @ current prices)
 PrimeABGB: Has "Call for Price" or "Email for Price" products. # todo find how to find s/oos from search page direct (reduce page requests)
+
+Crawler:
+MD: ITD-like category-filter thing to get all products in one request. Currently way too many requests and parsing needs to be done per script run.
+All products that do show up on their website are in-stock. Else all OOS

@@ -22,3 +22,4 @@ itd-search.html
 itd.py
 mdcrawler-daily.py
 exp.ipynb
+/__pycache__

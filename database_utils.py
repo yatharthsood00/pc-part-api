@@ -1,12 +1,5 @@
 import sqlite3
-
-# helper variables (table names, etc.)
-website_tables = {"theitdepot": "itd_products",
-                  "mdcomputers": "md_products",
-                  "primeabgb": "prime_products"
-                }
-
-database_file = 'database.db'
+from config import *
 
 class DatabaseUtils:
     def __init__(self, database_file, website_name):
