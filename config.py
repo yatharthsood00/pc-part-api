@@ -67,7 +67,6 @@ mdc_categories = {
     "Case": "cabinet",
     "PSU": "smps",
     "Monitor": "monitors",
-
 }
 
 
@@ -92,5 +91,11 @@ site_params = {
         'page': '' # replaced with in-loop page numbers
     },
 
+}
+
+site_product_class = {
+    "PGB": "product-wrapper",
+    "ITD": "product-item col-6 col-md-4 col-lg-3 p-1",
+    "MDC": "right-block right-b"
 }
 

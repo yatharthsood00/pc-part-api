@@ -95,4 +95,3 @@ class SiteCrawler:
                     blocks.append((self.site, item, category))
 
         return blocks
-
