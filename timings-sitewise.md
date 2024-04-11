@@ -41,3 +41,5 @@ ITD thing: later
 Database adding: final step
 
 - main function call - integrating MDC+PGB stuff
+09/04 - to keep this going for reals, let's keep the scripts separate from each other. Everything integrable (database stuff mostly) can be brought in together, but let's save time
+- Can later implement more integration/create a template that can work for all kinds of sites (paginated/bypass-paginated)
