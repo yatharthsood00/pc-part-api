@@ -1,6 +1,6 @@
 ## Fundamental data flow in app
 
-Crawler -> Lister -> db-store
+(Crawler Helpers) + Crawler -> Lister -> db-store
 
 ### Standard formats, etc.
 

@@ -9,10 +9,12 @@ from config import site_pages, mdc_categories, site_params
 from fetch_page_async import fetch_page
 from lister_async import lister_mdc
 
+import random
 
 async def mdc_fetch_pagecount(session, category_link):
 
-    """For each category, get the page counts
+    """Helper function: 
+    For each category, get the page counts
     from the page number test.
     Executed asynchronously, all pagecounts are fetched
     concurrently."""
@@ -30,7 +32,8 @@ async def mdc_fetch_pagecount(session, category_link):
 
 async def mdc_fetch_category(session, category, page):
 
-    """Helper function to fetch all pages
+    """Helper function:
+    Fetch all pages
     from a particular category"""
 
     link = site_pages["MDC"] + mdc_categories[category]
@@ -51,9 +54,10 @@ async def crawler_mdc():
         # need to first get the exact page number of each category
         # and use that in the pagewise loop
 
+        # Helper function execution:
         pagecount_tasks = [mdc_fetch_pagecount(session, cat) for cat in mdc_categories.values()]
         pagecounts = await asyncio.gather(*pagecount_tasks)
-        print("Page counts:", pagecounts)
+
         # collecting product listings
         # ALL pages fetched concurrently
         tasks = {}
@@ -61,9 +65,18 @@ async def crawler_mdc():
             category_tasks = [mdc_fetch_category(session, category, page)
                               for page in range(1, pagecount + 1)]
             tasks[category] = category_tasks
-        print(tasks.values())
-        all_items = await asyncio.gather(*[task for category_tasks in tasks.values()
-                                          for task in category_tasks])
+
+        task_lists = tasks.values()
+        all_tasks = []
+        # Iterate over each list of tasks (category_tasks) in the 'task_lists'.
+        for category_tasks in task_lists:
+            # Iterate over each task in the current list of tasks (category_tasks).
+            for task in category_tasks:
+                # Append the current task to the list of all tasks.
+                all_tasks.append(task)
+
+        # Gather all the tasks into a single list using asyncio.gather().
+        all_items = await asyncio.gather(*all_tasks)
 
         for category_items in all_items:
             print(f"items in category: {len(category_items)}")
@@ -77,4 +90,4 @@ if __name__ == "__main__":
     list_ofallitems = asyncio.run(crawler_mdc())
     print(len(list_ofallitems))
     l = lister_mdc(list_ofallitems)
-    # print(l)
+    print({k: l[k] for k in random.sample(l.keys(), min(5, len(l)))})

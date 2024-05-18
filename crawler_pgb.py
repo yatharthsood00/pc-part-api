@@ -1,4 +1,5 @@
-"""Asynchronous version of main script to run the program from"""
+"""Asynchronous version of main script to run the program from
+*Async script for PGB parts only"""
 
 import asyncio
 
@@ -37,4 +38,5 @@ if __name__ == "__main__":
     list_of_items = asyncio.run(crawler_pgb())
     # print(list_of_items)
     # l = lister_pgb(list_of_items)
-    # print(list_of_items["Thermaltake Toughpower GF3 A3 1050 Watt 80 Plus Gold ATX 3.0 SMPS PS-TPD-1050FNFAGD-H"])
+    # print(list_of_items["Thermaltake Toughpower GF3 A3 1050 Watt 80 Plus
+    # Gold ATX 3.0 SMPS PS-TPD-1050FNFAGD-H"])
