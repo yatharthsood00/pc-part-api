@@ -7,7 +7,7 @@ class DatabaseUtils:
         self.conn = self.initialise()
         self.cursor = self.conn.cursor()
         self.website = website_name
-        self.table_name = website_tables[website_name]
+        self.table_name = WEBSITE_TABLES[website_name]
 
     def initialise(self):
         conn = sqlite3.connect(self.database_file)
@@ -26,7 +26,7 @@ class DatabaseUtils:
                             ;''')
 
     def append_data_to_table(self, data):
-        # Append data to the table as a tuple: LNPIDC
+        # Append data to the table as a tuple: LNPIDC - change it to NLPIDC
         self.cursor.execute(f'''INSERT INTO {self.table_name} (
                                 link,
                                 name,

@@ -4,7 +4,7 @@ import asyncio
 
 import aiohttp
 from bs4 import BeautifulSoup
-from config import site_pages, site_params, itd_categories
+from config import SITEPAGES, SITE_PARAMS, itd_categories
 
 from fetch_page_async import fetch_page
 
@@ -15,8 +15,8 @@ async def crawler_itd():
     defines a session, imports all params
     and goes for it """
 
-    link = site_pages["ITD"]
-    params_template = site_params["ITD"]
+    link = SITEPAGES["ITD"]
+    params_template = SITE_PARAMS["ITD"]
 
 
     async with aiohttp.ClientSession() as session:

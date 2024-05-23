@@ -4,7 +4,7 @@ from crawler import SiteCrawler
 from config import *
 
 
-for site in sitenames.values():
+for site in SITES.values():
     DatabaseUtil = DatabaseUtils(database_file="database.db", website_name=site) 
     DatabaseUtil.create_table()
     print("site: ", site)

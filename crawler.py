@@ -25,8 +25,8 @@ class SiteCrawler:
         for category in pgb_categories:
 
             # prepare GET request parameters
-            link = site_pages["PGB"] + pgb_categories[category]
-            params = site_params["PGB"]
+            link = SITEPAGES["PGB"] + pgb_categories[category]
+            params = SITE_PARAMS["PGB"]
 
             # make GET request
             response = requests.get(link, params=params)
@@ -48,9 +48,9 @@ class SiteCrawler:
         for category in itd_categories:
 
             # load link and params for ITD
-            params = site_params["ITD"]
+            params = SITE_PARAMS["ITD"]
             params["category"] = str(itd_categories[category])
-            link = site_pages["ITD"]
+            link = SITEPAGES["ITD"]
 
             # HTTPS request
             response = requests.post(link, params=params , verify=False)
@@ -72,7 +72,7 @@ class SiteCrawler:
         for category in mdc_categories:
             
             # prep for first request (number of pages)
-            link = site_pages["MDC"] + mdc_categories[category]
+            link = SITEPAGES["MDC"] + mdc_categories[category]
             response = requests.get(link)
             soup = BeautifulSoup(response.text, 'html5lib')
             page = soup.find("div", class_="col-sm-6 text-right").text.split(sep=" ")
@@ -81,8 +81,8 @@ class SiteCrawler:
             for page in range(1, pages + 1):
 
                 # prep link here:
-                link = site_pages["MDC"] + mdc_categories[category]
-                params = site_params["MDC"]
+                link = SITEPAGES["MDC"] + mdc_categories[category]
+                params = SITE_PARAMS["MDC"]
                 params["page"] = page
 
                 # HTML Request and processing to BS4

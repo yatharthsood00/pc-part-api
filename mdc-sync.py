@@ -12,7 +12,7 @@ def page_MDC():
     for category in mdc_categories:
         
         # prep for first request (number of pages)
-        link = site_pages["MDC"] + mdc_categories[category]
+        link = SITEPAGES["MDC"] + mdc_categories[category]
         response = requests.get(link)
         soup = BeautifulSoup(response.text, 'html5lib')
         page = soup.find("div", class_="col-sm-6 text-right").text.split(sep=" ")
@@ -20,8 +20,8 @@ def page_MDC():
 
         for page in range(1, pages + 1):
             # prep link here:
-            link = site_pages["MDC"] + mdc_categories[category]
-            params = site_params["MDC"]
+            link = SITEPAGES["MDC"] + mdc_categories[category]
+            params = SITE_PARAMS["MDC"]
             params["page"] = page
 
             # HTML Request and processing to BS4

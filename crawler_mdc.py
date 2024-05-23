@@ -4,7 +4,7 @@ import asyncio
 
 import aiohttp
 from bs4 import BeautifulSoup
-from config import site_pages, mdc_categories, site_params
+from config import SITEPAGES, mdc_categories, SITE_PARAMS
 
 from fetch_page_async import fetch_page
 from lister_async import lister_mdc
@@ -20,7 +20,7 @@ async def mdc_fetch_pagecount(session, category_link):
     concurrently."""
 
     # print(f"getting pagecount for {category_link}")
-    link = site_pages["MDC"] + category_link
+    link = SITEPAGES["MDC"] + category_link
     async with session.get(link) as response:
         html = await response.text()
         soup = BeautifulSoup(html, 'lxml')
@@ -36,8 +36,8 @@ async def mdc_fetch_category(session, category, page):
     Fetch all pages
     from a particular category"""
 
-    link = site_pages["MDC"] + mdc_categories[category]
-    params = site_params["MDC"]
+    link = SITEPAGES["MDC"] + mdc_categories[category]
+    params = SITE_PARAMS["MDC"]
     params["page"] = page
 
     return await fetch_page(session, "MDC", link, params)

@@ -4,7 +4,7 @@
 import asyncio
 
 import aiohttp
-from config import site_pages, site_params, pgb_categories
+from config import SITEPAGES, SITE_PARAMS, pgb_categories
 
 from fetch_page_async import fetch_page
 from lister_async import lister_pgb
@@ -17,8 +17,8 @@ async def crawler_pgb():
     defines a session, imports all params
     and goes for it """
 
-    link = site_pages["PGB"]
-    params = site_params["PGB"]
+    link = SITEPAGES["PGB"]
+    params = SITE_PARAMS["PGB"]
     async with aiohttp.ClientSession() as session:
         tasks = {}
         for cat, catlink in pgb_categories.items():
