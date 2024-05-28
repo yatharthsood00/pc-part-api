@@ -11,24 +11,22 @@ import aiohttp
 from bs4 import BeautifulSoup
 from config import (
     SITES,
-    SITEPAGES,
-    CATEGORIES,
-    SITE_PARAMS,
     DATABASEFILE,
-    SitePack
 )
+from sitepack import SitePack
 
 
-async def get_and_parse(cat: str,
-                        url_and_param: list[str, dict],
-                        sitename: str,
+async def get_and_parse(
+                        cat: str,
+                        url: str,
+                        params: dict,
+                        divclass: str,
                         session: aiohttp.client.ClientSession,
                         q: asyncio.Queue):
     '''GET requests one page and parses it for getting all product listings
     using aiohttp and bs4
     define session in main'''
-    url = url_and_param[0]
-    params = url_and_param[1]
+
 
     async with session.get(url, params=params) as resp:
         encoded_params = urlencode(params)
@@ -40,11 +38,11 @@ async def get_and_parse(cat: str,
             html_text = await resp.read()
 
     soup = BeautifulSoup(html_text, 'lxml')
-    items = soup.find_all('div', class_="product-wrapper")
-    print(f"number of items in {cat} = {len(items)}")
+    items = soup.find_all('div', class_=divclass)
+    print(f"number of items in {cat} {params} = {len(items)}")
     await q.put((cat, items))
 
-async def create_listing(cursor, q: asyncio.Queue):
+async def create_listing(sp: SitePack, cursor, q: asyncio.Queue):
     """PGB lister from product listings"""
     while True:
         items_list = []
@@ -52,35 +50,14 @@ async def create_listing(cursor, q: asyncio.Queue):
         category, markup_list = await q.get()
 
         for item in markup_list:
-            # 1 - product name
-            name = item.find('h3', class_="product-title").text.strip()
-
-            # 2 - price
-            price = item.find('span', class_='price').text
-            try:
-                # first from the two prices, remove the rupee, replace the comma (with nothing)
-                price = price.split(" ")[0][1:].replace(",", "") 
-                price = int(price)
-            except ValueError:
-                price = -1
-
-            # 3 - instock indicator
-            status = item.find('span', class_="out-of-stock")
-            if status:
-                stock = 0
-            else:
-                stock = 1
-
-            # 4 - product link
-            link = item.find('a', class_="woocommerce-LoopProduct-link")['href']
-
+            name, link, price, stock = sp.lister(item)
             items_list.append((name, link, price, stock, category))
 
-        print(f"Category {category} - {len(items_list)} items listed") # db function can sort of directly go here
+        print(f"Category {category} - {len(items_list)} items listed") # lister finished, db next
 
         for data in items_list:
 
-            cursor.execute('''INSERT INTO pgb_products (
+            cursor.execute(f'''INSERT INTO {sp.tablename} (
                                     name,
                                     link,
                                     price,
@@ -88,26 +65,26 @@ async def create_listing(cursor, q: asyncio.Queue):
                                     date,
                                     category
                                 ) VALUES (?, ?, ?, ?, CURRENT_DATE, ?);''', data)
-        
+
         print(f"Appended {category} to db")
 
         q.task_done()
 
-async def create_pipeline(site):
+async def create_pipeline(site_to_refresh):
     '''Main pipeline assembler
     Starts the ClientSession(), gets the URL list ready and passes to parser
     Then works on the parsed items further as required'''
 
-    print(f"Starting pipeline for site {SITES[site]}")
+    print(f"Starting pipeline for site {SITES[site_to_refresh]}")
 
-    url_gen = SitePack(sitename = site)
-    urls_and_params = url_gen.links_and_params
-
-    session = aiohttp.ClientSession()
-    conn = sqlite3.connect("database.db")
+    sp = SitePack(sitename = site_to_refresh)
+    sess = aiohttp.ClientSession()
+    conn = sqlite3.connect(DATABASEFILE)
     cursor = conn.cursor()
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS pgb_products (
+    q = asyncio.Queue()
+
+    cursor.execute(f'''CREATE TABLE IF NOT EXISTS {sp.tablename} (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT(200),
                         link VARCHAR,
@@ -116,26 +93,25 @@ async def create_pipeline(site):
                         date DATE,
                         category text(30))
                     ;''')
-    
-    q = asyncio.Queue()
 
-    product_markup_list = [asyncio.create_task(get_and_parse(cat, url_and_param, site, session, q))
-                           for cat, url_and_param in urls_and_params.items()] # producers
-    
-    product_listings = [asyncio.create_task(create_listing(cursor, q))
-                           for _ in range(len(urls_and_params))] # consumers
-    
+    product_markup_list = [asyncio.create_task(get_and_parse(cat, link, param,
+                                                             sp.divclass, sess, q))
+                           for cat, link, param in sp.links_and_params] # producers
+
+    _ = [asyncio.create_task(create_listing(sp, cursor, q))
+                           for _ in range(len(sp.links_and_params))] # consumers
+
     await asyncio.gather(*product_markup_list)
     await q.join()
 
-    # not needed as we are running every single producer and every single
-    # consumer through the pipeline
-    # for p in product_listings:
-        # p.cancel()
+    conn.commit() # commit SQL changes
 
-    await session.close()
-    conn.commit()
-    conn.close()
+    # clean up
+    await sess.close() # close ClientSession()
+    conn.close() # close SQLite Connection
 
 if __name__ == "__main__":
-    asyncio.run(create_pipeline("PGB"))
+
+    refresh_list = ["PGB", "ITD", "MDC"]
+    for site in refresh_list:
+        asyncio.run(create_pipeline(site))
