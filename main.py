@@ -1,16 +1,60 @@
-from database_utils import DatabaseUtils
-from lister import ProductListing
-from crawler import SiteCrawler
-from config import *
+'''Script triggered from here
+TODO: add flags to determine sites to run script for'''
 
+import asyncio
+import sqlite3
 
-for site in SITES.values():
-    DatabaseUtil = DatabaseUtils(database_file="database.db", website_name=site) 
-    DatabaseUtil.create_table()
-    print("site: ", site)
-    site_html = SiteCrawler(site).blocks
-    for htm in site_html:
-        product = ProductListing(*htm)
-        DatabaseUtil.append_data_to_table(product.get_tuple())
-    print("Appended data for table: ", site)
-    DatabaseUtil.close()
+import aiohttp
+from config import (
+    SITES,
+    DATABASEFILE,
+)
+from sitepack import SitePack
+from product_page_parser import get_and_parse
+from listing_creator import create_listing
+
+async def create_pipeline(site_to_refresh):
+    '''Main pipeline assembler
+    Starts the ClientSession(), gets the URL list ready and passes to parser
+    Then works on the parsed items further as required'''
+
+    print(f"Starting pipeline for site {SITES[site_to_refresh]}")
+
+    sp = SitePack(sitename = site_to_refresh)
+    sess = aiohttp.ClientSession()
+    conn = sqlite3.connect(DATABASEFILE)
+    cursor = conn.cursor()
+
+    q = asyncio.Queue()
+
+    cursor.execute(f'''CREATE TABLE IF NOT EXISTS {sp.tablename} (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT(200),
+                        link VARCHAR,
+                        price INTEGER,
+                        instock INTEGER,
+                        date DATE,
+                        category text(30))
+                    ;''')
+
+    product_markup_list = [asyncio.create_task(get_and_parse(cat, link, param,
+                                                             sp.divclass, sess, q))
+                           for cat, link, param in sp.links_and_params] # producers
+
+    _ = [asyncio.create_task(create_listing(sp, cursor, q))
+                           for _ in range(len(sp.links_and_params))] # consumers
+
+    await asyncio.gather(*product_markup_list)
+    await q.join()
+
+    conn.commit() # commit SQL changes
+
+    # clean up
+    await sess.close() # close ClientSession()
+    conn.close() # close SQLite Connection
+
+if __name__ == "__main__":
+
+    refresh_list = ["PGB", "ITD", "MDC"]
+    for site in refresh_list:
+        asyncio.run(create_pipeline(site))
