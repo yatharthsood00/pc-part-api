@@ -2,10 +2,16 @@
 from product listing markup segments'''
 
 import asyncio
+import logging
 from sitepack import SitePack
 
+logger = logging.getLogger("parserLogger")
+
 async def create_listing(sp: SitePack, cursor, q: asyncio.Queue):
-    """PGB lister from product listings"""
+    """
+    PGB lister from product listings
+    """
+
     while True:
         items_list = []
 
@@ -15,7 +21,8 @@ async def create_listing(sp: SitePack, cursor, q: asyncio.Queue):
             name, link, price, stock = sp.lister(item)
             items_list.append((name, link, price, stock, category))
 
-        print(f"Category {category} - {len(items_list)} items listed") # lister finished, db next
+        logger.info("Parsed page for Category %s - %d items found",
+                    category, len(items_list))
 
         for data in items_list:
 
@@ -28,6 +35,6 @@ async def create_listing(sp: SitePack, cursor, q: asyncio.Queue):
                                     category
                                 ) VALUES (?, ?, ?, ?, CURRENT_DATE, ?);''', data)
 
-        print(f"Appended {category} to db")
+        logger.info("Appended Category %s to db", category)
 
         q.task_done()

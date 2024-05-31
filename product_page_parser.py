@@ -7,15 +7,16 @@ import logging
 import aiohttp
 from bs4 import BeautifulSoup
 
-logger = logging.getLogger("parserLogger")
+logger = logging.getLogger("siteLogger")
 
 async def get_and_parse(
-                        cat: str,
-                        url: str,
-                        params: dict,
-                        divclass: str,
-                        session: aiohttp.client.ClientSession,
-                        q: asyncio.Queue):
+        cat: str,
+        url: str,
+        params: dict,
+        divclass: str,
+        session: aiohttp.client.ClientSession,
+        q: asyncio.Queue
+) -> None:
     '''GET requests one page and parses it for getting all product listings
     using aiohttp and bs4
     define session in main'''

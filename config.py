@@ -80,19 +80,6 @@ CATEGORIES = {
     }
 }
 
-mdc_categories = {
-    "Processor": "processor",
-    "Cooler": "cooling-system",
-    "Motherboard": "motherboards",
-    "Memory": "memory",
-    "SSD": "ssd-drive",
-    "HDD": "internal-hdd",
-    "GPU": "graphics-card",
-    "Case": "cabinet",
-    "PSU": "smps",
-    "Monitor": "monitors",
-}
-
 
 # Crawler Variables
 SITEPAGES = {

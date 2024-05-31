@@ -17,3 +17,9 @@ Sites to be added:
 PCStudio - paginated (new function)
 VedantComputers - PGB-style
 Clarion - paginated (MDC-style, but not using params)
+
+Next steps:
+- better organising, run.py script
+- Adding next sites and restructuring pagination functions
+- Proper logging with logfiles, etc
+- Daily scheduled runs (locally for now)

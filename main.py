@@ -17,13 +17,12 @@ from config import (
     CREATE_QUERY_TEMPLATE
 )
 
-
+logger = logging.getLogger("mainLogger")
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-logger = logging.getLogger("mainLogger")
-logger.propagate = False
-logger.addHandler(logging.getLogger("parserLogger"))
+
+# logger.propagate = False
 
 
 async def create_pipeline(site_to_refresh):
@@ -74,4 +73,4 @@ if __name__ == "__main__":
         asyncio.run(create_pipeline(site))
         end_time = time.perf_counter()
         elapsed_time = end_time - start_time
-        print(f"Elapsed time for {site}: {elapsed_time} seconds")
+        logger.debug("Elapsed time for %s: %.2f seconds", site, elapsed_time)

@@ -1,5 +1,6 @@
 '''SitePack class definition'''
 import asyncio
+import logging
 import aiohttp
 from bs4 import BeautifulSoup
 
@@ -10,6 +11,7 @@ from config import (
     SITE_PARAMS
 )
 
+logger = logging.getLogger("sitepackLogger")
 
 class SitePack:
     '''
@@ -104,7 +106,7 @@ class SitePack:
         for cat, cat_append in self.categories.items():
             link = f"{self.sitepage}{cat_append}"
             pagecount = pagecounts[cat]
-            print(f"{cat} - {pagecount} pages")
+            logger.info("%s - %d pages", cat, pagecount)
             for i in range(1, pagecount+1):
                 params = site_params.copy()
                 params["page"] = i
@@ -117,7 +119,7 @@ class SitePack:
         Async process to get the pagecounts for each page in paginated sites
         '''
 
-        print(f"fetching {self.sitepage+link}")
+        logger.info("fetching %s", self.sitepage+link)
         async with aiohttp.ClientSession() as session:
             async with session.get(self.sitepage+link) as response:
                 page_text = await response.text()
