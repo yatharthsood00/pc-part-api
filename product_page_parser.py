@@ -2,9 +2,12 @@
 
 import asyncio
 from urllib.parse import urlencode
+import logging
 
 import aiohttp
 from bs4 import BeautifulSoup
+
+logger = logging.getLogger("parserLogger")
 
 async def get_and_parse(
                         cat: str,
@@ -19,15 +22,16 @@ async def get_and_parse(
 
 
     async with session.get(url, params=params) as resp:
-        encoded_params = urlencode(params)
-        full_url = f"{url}?{encoded_params}"
-        print(f"Accessing URL: {full_url}")
+        full_url = f"{url}?{urlencode(params)}"
+        logger.info("Accessing URL: %s", full_url)
         try:
+            # when response is text
             html_text = await resp.text()
         except UnicodeDecodeError:
+            # if response is in bytes
             html_text = await resp.read()
 
     soup = BeautifulSoup(html_text, 'lxml')
     items = soup.find_all('div', class_=divclass)
-    print(f"number of items in {cat} {params} = {len(items)}")
+    logger.debug("number of items in %s %s = %s", cat, params, len(items))
     await q.put((cat, items))

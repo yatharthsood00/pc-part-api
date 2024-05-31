@@ -87,10 +87,15 @@ class SitePack:
         '''Unfortunately a synchronous function to get the 
         number of pages in each category'''
         
-        resp = requests.get(link)
+        resp = requests.get(link, timeout=60)
         soup = BeautifulSoup(resp.text, 'lxml')
         page = soup.find("div", class_="col-sm-6 text-right").text.split(sep=" ")
         return int(page[6][1:])
+    
+    async def get_pagecount(self, cat, link):
+        '''Async process to get the pagecounts for each page in paginated sites'''
+        
+        pass
 
     def lister(self, html_block):
         '''Combined function for parsing all params to get
