@@ -11,3 +11,9 @@ PrimeABGB: Has "Call for Price" or "Email for Price" products. # todo find how t
 Crawler:
 MD: ITD-like category-filter thing to get all products in one request. Currently way too many requests and parsing needs to be done per script run.
 All products that do show up on their website are in-stock. Else all OOS
+
+
+Sites to be added:
+PCStudio - paginated (new function)
+VedantComputers - PGB-style
+Clarion - paginated (MDC-style, but not using params)

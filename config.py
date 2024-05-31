@@ -1,3 +1,5 @@
+'''Config data for the script'''
+
 # Meta stuff, for reference
 SITES = {'PGB': 'PrimeABGB', 'MDC': 'MD Computers', 'ITD': "TheITDepot"}
 
@@ -10,6 +12,18 @@ WEBSITE_TABLES = {
                 }
 
 DATABASEFILE = 'database.db'
+
+CREATE_QUERY_TEMPLATE = '''
+    CREATE TABLE IF NOT EXISTS {tablename} (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT(200),
+        link VARCHAR,
+        price INTEGER,
+        instock INTEGER,
+        date DATE,
+        category text(30)
+    );
+    '''
 
 # categories! to get through all products for itdepot. Can add categories here to get more products,
 # for now only the most obvious candidates stay here

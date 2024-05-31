@@ -1,8 +1,10 @@
 '''SitePack class definition'''
-import requests
+import asyncio
+import aiohttp
 from bs4 import BeautifulSoup
 
 from config import (
+    SITES,
     CATEGORIES,
     SITEPAGES,
     SITE_PARAMS
@@ -10,40 +12,55 @@ from config import (
 
 
 class SitePack:
-    '''Full-featured class for all website-specific methods
-    starting with URLs and Params
+    '''
+    All-in-one class for all website-specific methods and parameters
     '''
 
-    def __init__(self, sitename):
+    def __init__(
+                self,
+                sitename: str
+            ) -> None:
         self.site = sitename
+        self.full_sitename = SITES[self.site]
         self.categories = CATEGORIES[self.site]
         self.sitepage = SITEPAGES[self.site]
 
-        '''Links:
-        output format: dict
-        {str -> category: [str -> link-to-the-category, dict -> params]}
-        divclass:
-        Class of the div that has the product info (NLPI values)'''
+        '''
+        divclass: Class of the div that has the product info (NLPI values)
+        tablename: SQL table name
+        '''
 
         if self.site == "PGB":
-            self.links_and_params = self.parse_pgb()
             self.divclass = 'product-wrapper'
             self.tablename = 'pgb_products'
 
         elif self.site == "ITD":
-            self.links_and_params = self.parse_itd()
             self.divclass = 'product-item col-6 col-md-4 col-lg-3 p-1'
             self.tablename = 'itd_products'
 
         elif self.site == "MDC":
             self.divclass = 'right-block right-b'
-            self.links_and_params = self.parse_mdc()
             self.tablename = 'mdc_products'
 
+    async def parse_site(self) -> list[tuple]:
+        '''
+        Ladder to process paginated sites and non-paginated ones
+        output format: dict
+        {category -> str: [link-to-the-category -> str, params -> dict]}
+        '''
 
-    def parse_pgb(self):
-        '''PGB style: link has category
-        Simply append cat_append to base link'''
+        if self.site == "PGB":
+            return self.parse_pgb()
+        if self.site == "ITD":
+            return self.parse_itd()
+        if self.site == "MDC":
+            return await self.parse_mdc()
+
+    def parse_pgb(self) -> list[tuple]:
+        '''
+        PGB style: link has category
+        Simply append cat_append to base link
+        '''
 
         urls = []
         site_params = SITE_PARAMS["PGB"] # static params for PGB
@@ -53,9 +70,11 @@ class SitePack:
 
         return urls
 
-    def parse_itd(self):
-        '''ITD style: link has no category
-        param changes for each category'''
+    def parse_itd(self) -> list[tuple]:
+        '''
+        ITD style: link has no category
+        param changes for each category
+        '''
 
         urls = []
         site_params = SITE_PARAMS["ITD"] # varying param "category", static sitepage
@@ -66,15 +85,25 @@ class SitePack:
 
         return urls
 
-    def parse_mdc(self):
-        '''MDC style: link has category, but 
-        each category is paginated as a param'''
+    async def parse_mdc(self) -> list[tuple]:
+        '''
+        Main async process to create the MDC link list
+        '''
 
         urls = []
+        pagecounts = {}
         site_params = SITE_PARAMS["MDC"]
+
+        pagecount_tasks = {cat: asyncio.create_task(self.get_pagecounts(catlink))
+                            for cat, catlink in self.categories.items()}
+        await asyncio.gather(*pagecount_tasks.values())
+        for cat, task in pagecount_tasks.items():
+            result = await task
+            pagecounts[cat] = result
+
         for cat, cat_append in self.categories.items():
             link = f"{self.sitepage}{cat_append}"
-            pagecount = self.mdc_get_pagecount(link)
+            pagecount = pagecounts[cat]
             print(f"{cat} - {pagecount} pages")
             for i in range(1, pagecount+1):
                 params = site_params.copy()
@@ -82,24 +111,26 @@ class SitePack:
                 urls.append((cat, link, params))
 
         return urls
-
-    def mdc_get_pagecount(self, link):
-        '''Unfortunately a synchronous function to get the 
-        number of pages in each category'''
-        
-        resp = requests.get(link, timeout=60)
-        soup = BeautifulSoup(resp.text, 'lxml')
-        page = soup.find("div", class_="col-sm-6 text-right").text.split(sep=" ")
-        return int(page[6][1:])
     
-    async def get_pagecount(self, cat, link):
-        '''Async process to get the pagecounts for each page in paginated sites'''
+    async def get_pagecounts(self, link) -> int:
+        '''
+        Async process to get the pagecounts for each page in paginated sites
+        '''
+
+        print(f"fetching {self.sitepage+link}")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.sitepage+link) as response:
+                page_text = await response.text()
+                soup = BeautifulSoup(page_text, 'lxml')
+                page_text = soup.find("div", class_="col-sm-6 text-right").text.split(sep=" ")
         
-        pass
+        return int(page_text[6][1:])
 
     def lister(self, html_block):
-        '''Combined function for parsing all params to get
-        defined product listing items'''
+        '''
+        Combined function for parsing all params to get
+        defined product listing items
+        '''
 
         name, link, price, stock = "", "", 0, 0
 
@@ -158,3 +189,4 @@ class SitePack:
 
 
         return name, link, price, stock
+    
