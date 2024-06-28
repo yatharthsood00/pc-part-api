@@ -9,12 +9,14 @@ MD: If the product is not seen in the products list as a whole, it is OOS
 PrimeABGB: Has "Call for Price" or "Email for Price" products. # todo find how to find s/oos from search page direct (reduce page requests)
 
 Crawler:
-MD: ITD-like category-filter thing to get all products in one request. Currently way too many requests and parsing needs to be done per script run.
-All products that do show up on their website are in-stock. Else all OOS
+MD: ITD-like category-filter thing to get all products in one request. Currently way too many requests and parsing needs to be done per script run. Made separate function to async fetch product count as well. Requests are still too many, but they are not slow!
+All products that do show up on their website are in-stock. Else all OOS.
 
 
 Sites to be added:
-PCStudio - paginated (new function)
+PCStudio - paginated (new function) - no indication of how many pages are in the category
+    - needs a sort of style that keeps pagination "sequential" for each category.
+    - post-implementation: nope, just needed a closer look at page JS
 VedantComputers - PGB-style
 Clarion - paginated (MDC-style, but not using params)
 
@@ -23,3 +25,4 @@ Next steps:
 - Adding next sites and restructuring pagination functions
 - Proper logging with logfiles, etc
 - Daily scheduled runs (locally for now)
+- Database views creation (all current in-stock, fuzzy matched products, things of that nature)

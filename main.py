@@ -45,7 +45,8 @@ async def create_pipeline(site_to_refresh):
     cursor.execute(CREATE_QUERY_TEMPLATE.format(tablename=sp.tablename))
 
     list_of_links = await sp.parse_site()
-
+    # TODO: add number of links for each site to logger
+    
     product_markup_list = [asyncio.create_task(get_and_parse(cat, link, param,
                                                              sp.divclass, sess, q))
                            for cat, link, param in list_of_links] # producers
@@ -58,7 +59,7 @@ async def create_pipeline(site_to_refresh):
 
     conn.commit() # commit SQL changes
 
-    # clean up - can also be moved out
+    # clean up
     await sess.close() # close ClientSession()
     conn.close() # close SQLite Connection
 
@@ -67,7 +68,7 @@ async def create_pipeline(site_to_refresh):
 if __name__ == "__main__":
 
     # runtime flags can be used here
-    refresh_list = ["PGB", "ITD", "MDC"]
+    refresh_list = ["PGB", "ITD", "MDC", "PCS"]
     for site in refresh_list:
         start_time = time.perf_counter()
         asyncio.run(create_pipeline(site))

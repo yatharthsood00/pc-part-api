@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import aiohttp
+import re
 from bs4 import BeautifulSoup
 
 from config import (
@@ -44,6 +45,10 @@ class SitePack:
             self.divclass = 'right-block right-b'
             self.tablename = 'mdc_products'
 
+        elif self.site == "PCS":
+            self.divclass = 'jet-woo-products__item jet-woo-builder-product jet-woo-thumb-with-effect'
+            self.tablename = 'pcs_products'
+
     async def parse_site(self) -> list[tuple]:
         '''
         Ladder to process paginated sites and non-paginated ones
@@ -57,6 +62,8 @@ class SitePack:
             return self.parse_itd()
         if self.site == "MDC":
             return await self.parse_mdc()
+        if self.site == "PCS":
+            return await self.parse_pcs()
 
     def parse_pgb(self) -> list[tuple]:
         '''
@@ -96,7 +103,7 @@ class SitePack:
         pagecounts = {}
         site_params = SITE_PARAMS["MDC"]
 
-        pagecount_tasks = {cat: asyncio.create_task(self.get_pagecounts(catlink))
+        pagecount_tasks = {cat: asyncio.create_task(self.get_pagecount_mdc(catlink))
                             for cat, catlink in self.categories.items()}
         await asyncio.gather(*pagecount_tasks.values())
         for cat, task in pagecount_tasks.items():
@@ -114,12 +121,39 @@ class SitePack:
 
         return urls
     
-    async def get_pagecounts(self, link) -> int:
+    async def parse_pcs(self) -> list[tuple]:
+        '''
+        Main async process to create the PCS link list
+        '''
+
+        urls = []
+        pagecounts = {}
+        site_params = SITE_PARAMS["PCS"]
+
+        pagecount_tasks = {cat: asyncio.create_task(self.get_pagecount_pcs(catlink))
+                            for cat, catlink in self.categories.items()}
+        await asyncio.gather(*pagecount_tasks.values())
+        for cat, task in pagecount_tasks.items():
+            result = await task
+            pagecounts[cat] = result
+
+        for cat, cat_append in self.categories.items():
+            link = f"{self.sitepage}{cat_append}"
+            pagecount = pagecounts[cat]
+            logger.info("%s - %d pages", cat, pagecount)
+            for i in range(1, pagecount+1):
+                params = site_params.copy()
+                params["page"] = i
+                urls.append((cat, link, params))
+
+        return urls
+
+    async def get_pagecount_mdc(self, link) -> int:
         '''
         Async process to get the pagecounts for each page in paginated sites
         '''
 
-        logger.info("fetching %s", self.sitepage+link)
+        logger.info("fetching for pagecount %s", self.sitepage+link)
         async with aiohttp.ClientSession() as session:
             async with session.get(self.sitepage+link) as response:
                 page_text = await response.text()
@@ -127,6 +161,23 @@ class SitePack:
                 page_text = soup.find("div", class_="col-sm-6 text-right").text.split(sep=" ")
         
         return int(page_text[6][1:])
+    
+    async def get_pagecount_pcs(self, link) -> int:
+        '''
+        Async process to find which page is the last one for each category
+        a la PCS (var JetSmartFilterSettings, props, max_num_pages value)
+        '''
+
+        logger.info("fetching for pagecount %s", self.sitepage+link)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.sitepage+link) as response:
+                pattern = re.compile(r'"max_num_pages":\s*(\d+)')
+                page_text = await response.text()
+                soup = BeautifulSoup(page_text, 'lxml')
+                tag = soup.find('script', id='jet-smart-filters-js-extra').text
+                pagecount = pattern.search(tag).group(1)
+
+        return int(pagecount)
 
     def lister(self, html_block):
         '''
@@ -188,7 +239,27 @@ class SitePack:
 
             # 4 - instock indicator
             stock = 1
+        
+        elif self.site == "PCS":
+            # 1 - product name
+            name = html_block.find('div', class_='jet-woo-product-title')['title']
 
+            # 2 - product link
+            link = html_block.find('div', class_='jet-woo-products__inner-box jet-woo-item-overlay-wrap')['data-url']
+
+            # 3 - price
+            try:
+                price_str = html_block.find('div', class_='jet-woo-product-price').find('ins').text
+                if price_str is None:
+                    price = -1
+                else:
+                    price = int(float(price_str[1:].replace(",", "")))
+                    
+            except AttributeError:
+                price = -1
+
+            # 4 - instock indicator
+            stock = 1
 
         return name, link, price, stock
     

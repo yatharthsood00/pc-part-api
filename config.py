@@ -1,15 +1,15 @@
 '''Config data for the script'''
 
 # Meta stuff, for reference
-SITES = {'PGB': 'PrimeABGB', 'MDC': 'MD Computers', 'ITD': "TheITDepot"}
+SITES = {'PGB': 'PrimeABGB', 'MDC': 'MD Computers', 'ITD': "TheITDepot", "PCS": "PCStudio"}
 
 # database variables
 WEBSITE_TABLES = {
-                  "ITD": "itd_products",
-                  "MDC": "mdc_products",
-                  "PGB": "pgb_products",
-
-                }
+                "ITD": "itd_products",
+                "MDC": "mdc_products",
+                "PGB": "pgb_products",
+                "PCS": "pcs_products"
+            }
 
 DATABASEFILE = 'database.db'
 
@@ -77,6 +77,18 @@ CATEGORIES = {
             "Case": "cabinet",
             "PSU": "smps",
             "Monitor": "monitors",
+    },
+    "PCS": {
+        "Processor": "processor",
+        "Cooler": "cooler",
+        "Motherboard": "motherboard",
+        "Memory": "ram",
+        "SSD": "storage?jsf=jet-woo-products-grid&tax=product_cat:360", # yeah somewhat bodged
+        "HDD": "storage?jsf=jet-woo-products-grid&tax=product_cat:427", 
+        "GPU": "graphics-card",
+        "Case": "cabinets",
+        "PSU": "power-supply",
+        "Monitor": "monitor",
     }
 }
 
@@ -86,7 +98,7 @@ SITEPAGES = {
     "PGB": "https://www.primeabgb.com/buy-online-price-india/",
     "ITD": "https://www.theitdepot.com/category_filter.php/",
     "MDC": "https://mdcomputers.in/",
-
+    "PCS": "https://www.pcstudio.in/product-category/"
 }
 
 SITE_PARAMS = {
@@ -101,11 +113,15 @@ SITE_PARAMS = {
     "MDC": {
         'page': '' # replaced with in-loop page numbers
     },
+    "PCS": {
+        # no params required
+    }
 
 }
 
 site_product_class = {
     "PGB": "product-wrapper",
     "ITD": "product-item col-6 col-md-4 col-lg-3 p-1",
-    "MDC": "right-block right-b"
+    "MDC": "right-block right-b",
+    "PCS": "jet-woo-products__item jet-woo-builder-product jet-woo-thumb-with-effect"
 }
