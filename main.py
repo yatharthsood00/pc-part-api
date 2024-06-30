@@ -45,8 +45,7 @@ async def create_pipeline(site_to_refresh):
     cursor.execute(CREATE_QUERY_TEMPLATE.format(tablename=sp.tablename))
 
     list_of_links = await sp.parse_site()
-    # TODO: add number of links for each site to logger
-    
+    logger.info("Collated links for site %s: %d", sp.full_sitename, len(list_of_links))
     product_markup_list = [asyncio.create_task(get_and_parse(cat, link, param,
                                                              sp.divclass, sess, q))
                            for cat, link, param in list_of_links] # producers

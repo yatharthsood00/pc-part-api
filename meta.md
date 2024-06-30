@@ -14,9 +14,10 @@ All products that do show up on their website are in-stock. Else all OOS.
 
 
 Sites to be added:
-PCStudio - paginated (new function) - no indication of how many pages are in the category
+~~PCStudio - paginated (new function) - no indication of how many pages are in the category
     - needs a sort of style that keeps pagination "sequential" for each category.
-    - post-implementation: nope, just needed a closer look at page JS
+    - post-implementation: nope, just needed a closer look at page JS~~
+    - Does take a lot longer to run vs MDC (which has ~ same links fetched)
 VedantComputers - PGB-style
 Clarion - paginated (MDC-style, but not using params)
 
