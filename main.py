@@ -6,6 +6,7 @@ import asyncio
 import sqlite3
 import logging
 import time
+import sys
 
 import aiohttp
 from sitepack import SitePack
@@ -67,7 +68,11 @@ async def create_pipeline(site_to_refresh):
 if __name__ == "__main__":
 
     # runtime flags can be used here
-    refresh_list = ["PGB", "ITD", "MDC", "PCS", "VDC"]
+    refresh_list = sys.argv[1:]
+    print(refresh_list)
+    if len(refresh_list) == 1 and refresh_list[0] == "runall":
+        refresh_list = SITES.keys()
+    
     for site in refresh_list:
         start_time = time.perf_counter()
         asyncio.run(create_pipeline(site))

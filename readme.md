@@ -7,7 +7,7 @@ While the script can be run by anyone and you should get all parts' prices at th
 ### How to run the script:
 
 1. Create your virtual env.
-2. Run main.py.
+2. ```main.py``` takes command-line arguments to run each website. To run all of them, use ```runall``` as the only argument.
 
 ### Current Websites Parsed:
 
