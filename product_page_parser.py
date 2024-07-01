@@ -27,7 +27,7 @@ async def get_and_parse(
         logger.info("Accessing URL: %s", full_url)
         try:
             # when response is text
-            html_text = await resp.text()
+            html_text = await resp.text(errors='ignore')
         except UnicodeDecodeError:
             # if response is in bytes
             html_text = await resp.read()
