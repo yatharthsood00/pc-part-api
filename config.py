@@ -1,15 +1,22 @@
 '''Config data for the script'''
 
 # Meta stuff, for reference
-SITES = {'PGB': 'PrimeABGB', 'MDC': 'MD Computers', 'ITD': "TheITDepot", "PCS": "PCStudio"}
+SITES = {
+    'PGB': 'PrimeABGB',
+    'MDC': 'MD Computers',
+    'ITD': "TheITDepot",
+    'PCS': 'PCStudio',
+    'VDC': 'Vedant Computers',
+}
 
 # database variables
 WEBSITE_TABLES = {
-                "ITD": "itd_products",
-                "MDC": "mdc_products",
-                "PGB": "pgb_products",
-                "PCS": "pcs_products"
-            }
+    "ITD": "itd_products",
+    "MDC": "mdc_products",
+    "PGB": "pgb_products",
+    "PCS": "pcs_products",
+    "VDC": "vdc_products"
+}
 
 DATABASEFILE = 'database.db'
 
@@ -89,6 +96,18 @@ CATEGORIES = {
         "Case": "cabinets",
         "PSU": "power-supply",
         "Monitor": "monitor",
+    },
+    "VDC": {
+        "Processor": "pc-components/processor",
+        "Cooler": "pc-components/fans-and-cooling/cpu-cooler",
+        "Motherboard": "pc-components/motherboard/",
+        "Memory": "pc-components/memory",
+        "SSD": "pc-components/storage/solid-state-drive",
+        "HDD": "pc-components/storage/hard-disk-drive",
+        "GPU": "pc-components/graphics-cards/gpu",
+        "Case": "pc-components/chassis/cabinet",
+        "PSU": "pc-components/power-supply-units/smps",
+        "Monitor": "pc-peripherals/output-devices/monitor", # lol
     }
 }
 
@@ -98,7 +117,8 @@ SITEPAGES = {
     "PGB": "https://www.primeabgb.com/buy-online-price-india/",
     "ITD": "https://www.theitdepot.com/category_filter.php/",
     "MDC": "https://mdcomputers.in/",
-    "PCS": "https://www.pcstudio.in/product-category/"
+    "PCS": "https://www.pcstudio.in/product-category/",
+    "VDC": "https://www.vedantcomputers.com/"
 }
 
 SITE_PARAMS = {
@@ -115,13 +135,17 @@ SITE_PARAMS = {
     },
     "PCS": {
         # no params required
+    },
+    "VDC": {
+        'limit': 9999,
     }
 
 }
 
-site_product_class = {
+PRODUCT_DIV_CLASS = {
     "PGB": "product-wrapper",
     "ITD": "product-item col-6 col-md-4 col-lg-3 p-1",
     "MDC": "right-block right-b",
-    "PCS": "jet-woo-products__item jet-woo-builder-product jet-woo-thumb-with-effect"
+    "PCS": "jet-woo-products__item jet-woo-builder-product jet-woo-thumb-with-effect",
+    "VDC": "product-thumb",
 }

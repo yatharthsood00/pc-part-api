@@ -18,7 +18,8 @@ Sites to be added:
     - needs a sort of style that keeps pagination "sequential" for each category.
     - post-implementation: nope, just needed a closer look at page JS~~
     - Does take a lot longer to run vs MDC (which has ~ same links fetched)
-VedantComputers - PGB-style
+~~VedantComputers - PGB-style
+    - only in-stock products show in page. Others do not.~~
 Clarion - paginated (MDC-style, but not using params)
 
 Next steps:

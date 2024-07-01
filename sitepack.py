@@ -1,15 +1,17 @@
 '''SitePack class definition'''
 import asyncio
 import logging
-import aiohttp
 import re
+import aiohttp
 from bs4 import BeautifulSoup
 
 from config import (
     SITES,
     CATEGORIES,
+    WEBSITE_TABLES,
     SITEPAGES,
-    SITE_PARAMS
+    SITE_PARAMS,
+    PRODUCT_DIV_CLASS
 )
 
 logger = logging.getLogger("sitepackLogger")
@@ -19,35 +21,17 @@ class SitePack:
     All-in-one class for all website-specific methods and parameters
     '''
 
-    def __init__(
-                self,
-                sitename: str
-            ) -> None:
+    def __init__(self, sitename: str) -> None:
         self.site = sitename
         self.full_sitename = SITES[self.site]
         self.categories = CATEGORIES[self.site]
         self.sitepage = SITEPAGES[self.site]
-
+        self.divclass = PRODUCT_DIV_CLASS[self.site] # class of the div
+        self.tablename = WEBSITE_TABLES[self.site]
         '''
         divclass: Class of the div that has the product info (NLPI values)
         tablename: SQL table name
         '''
-
-        if self.site == "PGB":
-            self.divclass = 'product-wrapper'
-            self.tablename = 'pgb_products'
-
-        elif self.site == "ITD":
-            self.divclass = 'product-item col-6 col-md-4 col-lg-3 p-1'
-            self.tablename = 'itd_products'
-
-        elif self.site == "MDC":
-            self.divclass = 'right-block right-b'
-            self.tablename = 'mdc_products'
-
-        elif self.site == "PCS":
-            self.divclass = 'jet-woo-products__item jet-woo-builder-product jet-woo-thumb-with-effect'
-            self.tablename = 'pcs_products'
 
     async def parse_site(self) -> list[tuple]:
         '''
@@ -64,6 +48,8 @@ class SitePack:
             return await self.parse_mdc()
         if self.site == "PCS":
             return await self.parse_pcs()
+        if self.site == "VDC":
+            return self.parse_vdc()
 
     def parse_pgb(self) -> list[tuple]:
         '''
@@ -145,6 +131,20 @@ class SitePack:
                 params = site_params.copy()
                 params["page"] = i
                 urls.append((cat, link, params))
+
+        return urls
+    
+    def parse_vdc(self) -> list[tuple]:
+        '''
+        Similar to PGB style: link has category
+        Simply append cat_append to base link
+        '''
+
+        urls = []
+        site_params = SITE_PARAMS["VDC"] # static params for VDC
+        for cat, cat_append in self.categories.items():
+            link = f"{self.sitepage}{cat_append}"
+            urls.append([cat, link, site_params])
 
         return urls
 
@@ -257,6 +257,23 @@ class SitePack:
                     
             except AttributeError:
                 price = -1
+
+            # 4 - instock indicator
+            stock = 1
+        
+        elif self.site == "VDC":
+            # 1, 2 - product name and link
+            nl = html_block.find('div', class_='name')
+            name = nl.text.strip()
+            link = nl.find('a')['href'][:-11] # exclude "?limit=9999"
+
+            # 3 - price
+            try:
+                price = html_block.find('span', class_='price-new').text.split(" ")[-1][1:].replace(",", "")
+            except AttributeError:
+                price = html_block.find('span', class_='price-normal').text.split(" ")[-1][1:].replace(",", "")
+            price = float(price)
+            price = int(price)
 
             # 4 - instock indicator
             stock = 1

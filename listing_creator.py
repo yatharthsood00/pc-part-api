@@ -9,7 +9,7 @@ logger = logging.getLogger("parserLogger")
 
 async def create_listing(sp: SitePack, cursor, q: asyncio.Queue):
     """
-    PGB lister from product listings
+    Universal lister for all product listings
     """
 
     while True:

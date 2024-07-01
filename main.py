@@ -52,7 +52,7 @@ async def create_pipeline(site_to_refresh):
 
     _ = [asyncio.create_task(create_listing(sp, cursor, q))
                            for _ in range(len(list_of_links))] # consumers
-
+ 
     await asyncio.gather(*product_markup_list)
     await q.join()
 
@@ -67,7 +67,7 @@ async def create_pipeline(site_to_refresh):
 if __name__ == "__main__":
 
     # runtime flags can be used here
-    refresh_list = ["PGB", "ITD", "MDC", "PCS"]
+    refresh_list = ["PGB", "ITD", "MDC", "PCS", "VDC"]
     for site in refresh_list:
         start_time = time.perf_counter()
         asyncio.run(create_pipeline(site))
