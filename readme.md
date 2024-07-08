@@ -15,6 +15,7 @@ While the script can be run by anyone and you should get all parts' prices at th
 2. [MDComputers](https://mdcomputers.in)
 3. [The IT Depot](https://www.theitdepot.com/)
 4. [PCStudio](https://www.pcstudio.in/)
+5. [Vedant Computers](https://www.vedantcomputers.com/)
 
 ### Future Plans:
 
