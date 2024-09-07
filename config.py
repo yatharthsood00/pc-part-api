@@ -5,7 +5,7 @@ SITES = {
     'PGB': 'PrimeABGB',
     'MDC': 'MD Computers',
     'ITD': "TheITDepot",
-    'PCS': 'PCStudio',
+    # 'PCS': 'PCStudio', # removed issues:#1
     'VDC': 'Vedant Computers',
 }
 
@@ -146,6 +146,6 @@ PRODUCT_DIV_CLASS = {
     "PGB": "product-wrapper",
     "ITD": "product-item col-6 col-md-4 col-lg-3 p-1",
     "MDC": "right-block right-b",
-    "PCS": "jet-woo-products__item jet-woo-builder-product jet-woo-thumb-with-effect",
+    "PCS": "product-inner clr",
     "VDC": "product-thumb",
 }

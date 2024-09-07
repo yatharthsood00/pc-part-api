@@ -20,6 +20,9 @@ Sites to be added:
     - Does take a lot longer to run vs MDC (which has ~ same links fetched)
 ~~VedantComputers - PGB-style
     - only in-stock products show in page. Others do not.~~
+(07/09) - PCStudio has been redesigned:
+    - lazy-loaded pages, but pagenumbers still exist (similar to StacksKB - other project). Can't find itemcount in the first page HTML yet
+    - New product listing divs and such
 Clarion - paginated (MDC-style, but not using params)
 
 Next steps:

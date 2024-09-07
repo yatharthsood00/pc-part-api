@@ -8,3 +8,4 @@ try-site.ipynb
 /env
 /.vscode
 output.html
+/.venv
